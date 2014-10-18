@@ -2,9 +2,9 @@
   "name": "the-great-escape",
   "subdomain": "the-great-escape",
   "scripts": {
-    "start": "node app.js"
+    "start": "node web/app.js"
   },
-  "version": "0.0.1-1",
+  "version": "0.0.1",
   "engines": {
     "node": "v0.10.31"
   },
