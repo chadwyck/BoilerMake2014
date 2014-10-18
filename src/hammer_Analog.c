@@ -8,6 +8,7 @@
 Layer *simple_bg_layer;
 Layer *date_layer;
 Layer *hands_layer;
+BitmapLayer *background;
 
 //TEXT LAYERS
 TextLayer *day_label;
@@ -26,22 +27,26 @@ char num_buffer[4];
 //MISC
 int tapcount = 0;
 Window *window;
-
-
+GBitmap *bacgroundimage;
 
 
 /***************************************************************
 *                       Time
 ***************************************************************/
 static void bg_update_proc(Layer *layer, GContext *ctx) {
-
-  graphics_context_set_fill_color(ctx, GColorBlack);
+  Layer *window_layer = window_get_root_layer(window);
+  GRect bounds = layer_get_bounds(window_layer);
+  
+ 
+   graphics_context_set_fill_color(ctx, GColorBlack);
+//  bacgroundimage = gbitmap_create_with_resource(CLOCKIMAGE);
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
-
+  //graphics_draw_bitmap_in_rect(ctx, bacgroundimage, bounds);
+  graphics_fill_rect(ctx, bounds, 11, GCornerNone);
   graphics_context_set_fill_color(ctx, GColorWhite);
-  for (int i = 0; i < NUM_CLOCK_TICKS; ++i) {
-    gpath_draw_filled(ctx, tick_paths[i]);
-  }
+//  for (int i = 0; i < NUM_CLOCK_TICKS; ++i) {
+ //   gpath_draw_filled(ctx, tick_paths[i]);
+//  }
 }
 
 static void hands_update_proc(Layer *layer, GContext *ctx) {
@@ -78,6 +83,9 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(bounds.size.w / 2 - 1, bounds.size.h / 2 - 1, 3, 3), 0, GCornerNone);**/
 }
+/***************************************************************
+*                       .js
+***************************************************************/
 
 static void date_update_proc(Layer *layer, GContext *ctx) {
 
@@ -95,6 +103,17 @@ static void handle_second_tick(struct tm *tick_time, TimeUnits units_changed) {
   layer_mark_dirty(window_get_root_layer(window));
 }
 
+
+
+
+
+static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
+  APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
+}
+
+static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
+}
 /***************************************************************
 *                       Taps
 ***************************************************************/
@@ -112,6 +131,8 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   }
   text_layer_set_text(taps, str);
   
+  
+  
   //text_layer_set_text(day_label, tapcount)
 }
 
@@ -122,12 +143,21 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  // init layers
+  //init layers
   simple_bg_layer = layer_create(bounds);
   layer_set_update_proc(simple_bg_layer, bg_update_proc);
   layer_add_child(window_layer, simple_bg_layer);
-
-  // init date layer -> a plain parent layer to create a date update proc
+  
+  //background clock
+  background = bitmap_layer_create(bounds);
+  bacgroundimage = gbitmap_create_with_resource(RESOURCE_ID_CLOCKIMAGE);
+  bitmap_layer_set_bitmap(background, bacgroundimage);
+  bitmap_layer_set_alignment(background, GAlignBottom);
+  bitmap_layer_set_compositing_mode(background, GCompOpAssign);
+  layer_add_child(window_layer, bitmap_layer_get_layer(background));
+  
+  
+  //init date layer -> a plain parent layer to create a date update proc
   date_layer = layer_create(bounds);
   layer_set_update_proc(date_layer, date_update_proc);
   layer_add_child(window_layer, date_layer);
@@ -145,7 +175,7 @@ static void window_load(Window *window) {
   text_layer_set_text(taps, "no tap");
   text_layer_set_background_color(taps, GColorBlack);
   text_layer_set_text_color(taps, GColorWhite);
-//  GFont norm18 = fonts_get_system_font(FONT_KEY_GOTHIC_18);
+  //GFont norm18 = fonts_get_system_font(FONT_KEY_GOTHIC_18);
   text_layer_set_font(taps, norm18);
   layer_add_child(date_layer, text_layer_get_layer(taps));
 
@@ -153,8 +183,8 @@ static void window_load(Window *window) {
   num_label = text_layer_create(GRect(73, 114, 18, 20));
 
   text_layer_set_text(num_label, num_buffer);
-  text_layer_set_background_color(num_label, GColorBlack);
-  text_layer_set_text_color(num_label, GColorWhite);
+ text_layer_set_background_color(num_label, GColorBlack);
+ text_layer_set_text_color(num_label, GColorWhite);
   GFont bold18 = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
   text_layer_set_font(num_label, bold18);
 
@@ -164,6 +194,10 @@ static void window_load(Window *window) {
   hands_layer = layer_create(bounds);
   layer_set_update_proc(hands_layer, hands_update_proc);
   layer_add_child(window_layer, hands_layer);
+  
+  app_message_register_outbox_failed(outbox_failed_callback);
+  app_message_register_outbox_sent(outbox_sent_callback);
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 static void window_unload(Window *window) {
@@ -173,6 +207,7 @@ static void window_unload(Window *window) {
   text_layer_destroy(num_label);
   text_layer_destroy(taps);
   layer_destroy(hands_layer);
+  bitmap_layer_destroy(background);
 }
 
 /***************************************************************
