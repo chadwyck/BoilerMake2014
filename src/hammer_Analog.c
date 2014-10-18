@@ -20,8 +20,8 @@ TextLayer *taps;
 //static GBitmap *hour_arrow;
 BitmapLayer *minuteLayer;
 BitmapLayer *hourlayer;
-static RotBitmapLayer *minutehammer;
-static RotBitmapLayer *hourhammer;
+//static RotBitmapLayer *minutehammer;
+//static RotBitmapLayer *hourhammer;
 static GPath *tick_paths[NUM_CLOCK_TICKS];
 
 // buffers
@@ -32,6 +32,8 @@ char num_buffer[4];
 int tapcount = 0;
 Window *window;
 GBitmap *bacgroundimage;
+GBitmap *hourhammerimage;
+GBitmap *minutehammerimage;
 
 
 /***************************************************************
@@ -70,19 +72,37 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   // second hand
   graphics_context_set_stroke_color(ctx, GColorWhite);
   graphics_draw_line(ctx, secondHand, center);
+  
+  minuteLayer = bitmap_layer_create(GRect(55, 85, 33, 66));
+  hourlayer = bitmap_layer_create(GRect(55, 85, 33, 66));
+  
+  hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE);
+  minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND_WHITE);
+  
+  bitmap_layer_set_compositing_mode(minuteLayer, GCompOpAnd);
+  bitmap_layer_set_compositing_mode(hourlayer, GCompOpAnd);
+  
+  bitmap_layer_set_bitmap(minuteLayer, minutehammerimage);
+  bitmap_layer_set_bitmap(hourlayer, hourhammerimage);
+  
+  layer_add_child(layer, bitmap_layer_get_layer(minuteLayer));
+  layer_add_child(layer, bitmap_layer_get_layer(hourlayer));
+  
+  
+  
 
   // minute/hour hand
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  graphics_context_set_stroke_color(ctx, GColorBlack);
+  //graphics_context_set_fill_color(ctx, GColorWhite);
+  //graphics_context_set_stroke_color(ctx, GColorBlack);
 
   //gpath_rotate_to(minute_arrow, TRIG_MAX_ANGLE * t->tm_min / 60);
-  rot_bitmap_layer_set_angle(minutehammer, TRIG_MAX_ANGLE * t->tm_min / 60);
+  //rot_bitmap_layer_set_angle(minutehammer, TRIG_MAX_ANGLE * t->tm_min / 60);
   
   //gpath_draw_filled(ctx, minute_arrow);
   //gpath_draw_outline(ctx, minute_arrow);
 
   //path_rotate_to(hour_arrow, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
-  rot_bitmap_layer_set_angle(hourhammer, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  //rot_bitmap_layer_set_angle(hourhammer, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
   //gpath_draw_filled(ctx, hour_arrow);
   //gpath_draw_outline(ctx, hour_arrow);
 
@@ -212,6 +232,8 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, hands_layer);
   
   
+  
+  
   //init .js communication
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
@@ -246,11 +268,12 @@ static void init(void) {
   GRect rect = GRect(55, 85, 33, 66);//off a little
   GPoint point = GPoint(72,95);
   //GRect rectMin = ((Grect){{(55.5),(85.5)},{(33),(66)}});
-
+/**
     
   //minute_arrow = gbitmap
-  minuteLayer = bitmap_layer_create(rect);
-  hourlayer = bitmap_layer_create(rect); //move out of there
+  minuteLayer = bitmap_layer_create(GRect(55, 85, 33, 66));
+  hourlayer = bitmap_layer_create(GRect(55, 85, 33, 66)); //move out of there
+  
   //bitmap_layer_set_bitmap(hourlayer, gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE));
 //  bitmap_layer_set_bitmap(minuteLayer, gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND_WHITE));
   minutehammer = rot_bitmap_layer_create(gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE));
@@ -268,7 +291,7 @@ static void init(void) {
     layer_add_child(window_layer, bitmap_layer_get_layer(hourlayer));
   
    
-  
+  **/
   //gpath_move_to(minute_arrow, center);
   //gpath_move_to(hour_arrow, center);
 
@@ -290,10 +313,12 @@ static void init(void) {
 
 static void deinit(void) {
   //kill the hands
-  rot_bitmap_layer_destroy(minutehammer);
-  rot_bitmap_layer_destroy(hourhammer);
-  //gbitmap_destroy(minute_arrow);
+  //rot_bitmap_layer_destroy(minutehammer);
+  ///rot_bitmap_layer_destroy(hourhammer);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "bit layer to be freed %p", minuteLayer);  //gbitmap_destroy(minute_arrow);
   //gbitmap_destroy(hour_arrow);
+  bitmap_layer_destroy(minuteLayer);
+  bitmap_layer_destroy(hourlayer);
   
   //kill the background
   //gbitmap_destroy(bitmap_layer_get_bitmap(background));
