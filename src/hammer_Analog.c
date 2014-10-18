@@ -27,9 +27,6 @@ char num_buffer[4];
 int tapcount = 0;
 Window *window;
 
-
-
-
 /***************************************************************
 *                       Time
 ***************************************************************/
@@ -99,6 +96,14 @@ static void handle_second_tick(struct tm *tick_time, TimeUnits units_changed) {
 *                       Taps
 ***************************************************************/
 
+static void out_handler(DictionaryIterator *iter, void *context) 
+{
+   //do nothing special
+}
+
+
+
+
 void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   // Process tap on ACCEL_AXIS_X, ACCEL_AXIS_Y or ACCEL_AXIS_Z
   // Direction is 1 or -1
@@ -112,6 +117,17 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   }
   text_layer_set_text(taps, str);
   
+  //Register AppMessage events
+    app_message_register_outbox_sent(out_handler);
+    app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());    //Largest possible input and output buffer sizes
+  
+  //send off the data
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+  Tuplet value = TupletInteger(1, 42); //writing placeholder value
+  dict_write_tuplet(iter, &value); 
+  app_message_outbox_send();
+    
   //text_layer_set_text(day_label, tapcount)
 }
 
@@ -211,7 +227,6 @@ static void init(void) {
   
   //taps
     accel_tap_service_subscribe(accel_tap_handler);
-  
 }
 
 static void deinit(void) {
