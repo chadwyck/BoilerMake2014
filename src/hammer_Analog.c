@@ -16,8 +16,12 @@ TextLayer *num_label;
 TextLayer *taps;
 
 //HANDS
-static GPath *minute_arrow;
-static GPath *hour_arrow;
+//static GBitmap *minute_arrow;
+//static GBitmap *hour_arrow;
+BitmapLayer *minuteLayer;
+BitmapLayer *hourlayer;
+static RotBitmapLayer *minutehammer;
+static RotBitmapLayer *hourhammer;
 static GPath *tick_paths[NUM_CLOCK_TICKS];
 
 // buffers
@@ -71,13 +75,16 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorWhite);
   graphics_context_set_stroke_color(ctx, GColorBlack);
 
-  gpath_rotate_to(minute_arrow, TRIG_MAX_ANGLE * t->tm_min / 60);
-  gpath_draw_filled(ctx, minute_arrow);
-  gpath_draw_outline(ctx, minute_arrow);
+  //gpath_rotate_to(minute_arrow, TRIG_MAX_ANGLE * t->tm_min / 60);
+  rot_bitmap_layer_set_angle(minutehammer, TRIG_MAX_ANGLE * t->tm_min / 60);
+  
+  //gpath_draw_filled(ctx, minute_arrow);
+  //gpath_draw_outline(ctx, minute_arrow);
 
-  gpath_rotate_to(hour_arrow, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
-  gpath_draw_filled(ctx, hour_arrow);
-  gpath_draw_outline(ctx, hour_arrow);
+  //path_rotate_to(hour_arrow, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  rot_bitmap_layer_set_angle(hourhammer, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  //gpath_draw_filled(ctx, hour_arrow);
+  //gpath_draw_outline(ctx, hour_arrow);
 
  /** // dot in the middle
   graphics_context_set_fill_color(ctx, GColorBlack);
@@ -119,18 +126,27 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 ***************************************************************/
 
 void accel_tap_handler(AccelAxisType axis, int32_t direction) {
-  // Process tap on ACCEL_AXIS_X, ACCEL_AXIS_Y or ACCEL_AXIS_Z
-  // Direction is 1 or -1
+
+  //GUI confirmation of tap
   tapcount++;
   char* str;
   if(tapcount % 2 == 0) {
     str = "1";
   }
   else{
-    str = "two";
+    str = "2";
   }
   text_layer_set_text(taps, str);
   
+  
+  //.js sending
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+  // Add a key-value pair
+  dict_write_uint8(iter, 0, 1);//1 to be replaced with something relating to the pebble ID
+
+  // Send the message!
+  app_message_outbox_send();
   
   
   //text_layer_set_text(day_label, tapcount)
@@ -171,8 +187,8 @@ static void window_load(Window *window) {
   text_layer_set_font(day_label, norm18);
   
   //int tap label
-  taps = text_layer_create(GRect(46, 20, 27, 20));
-  text_layer_set_text(taps, "no tap");
+  taps = text_layer_create(GRect(10, 10, 20, 20));
+  text_layer_set_text(taps, "1");
   text_layer_set_background_color(taps, GColorBlack);
   text_layer_set_text_color(taps, GColorWhite);
   //GFont norm18 = fonts_get_system_font(FONT_KEY_GOTHIC_18);
@@ -195,6 +211,8 @@ static void window_load(Window *window) {
   layer_set_update_proc(hands_layer, hands_update_proc);
   layer_add_child(window_layer, hands_layer);
   
+  
+  //init .js communication
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
@@ -224,14 +242,35 @@ static void init(void) {
   num_buffer[0] = '\0';
 
   // init hand paths
-  minute_arrow = gpath_create(&MINUTE_HAND_POINTS);
-  hour_arrow = gpath_create(&HOUR_HAND_POINTS);
+  //#define GRect(55.5, 85.5, 33, 66)((Grect){{(55.5),(85.5)},{(33),(66)}});
+  GRect rect = GRect(55, 85, 33, 66);//off a little
+  GPoint point = GPoint(72,95);
+  //GRect rectMin = ((Grect){{(55.5),(85.5)},{(33),(66)}});
 
-  Layer *window_layer = window_get_root_layer(window);
-  GRect bounds = layer_get_bounds(window_layer);
-  const GPoint center = grect_center_point(&bounds);
-  gpath_move_to(minute_arrow, center);
-  gpath_move_to(hour_arrow, center);
+    
+  //minute_arrow = gbitmap
+  minuteLayer = bitmap_layer_create(rect);
+  hourlayer = bitmap_layer_create(rect); //move out of there
+  //bitmap_layer_set_bitmap(hourlayer, gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE));
+//  bitmap_layer_set_bitmap(minuteLayer, gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND_WHITE));
+  minutehammer = rot_bitmap_layer_create(gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE));
+  hourhammer = rot_bitmap_layer_create(gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND_WHITE));
+  //minutehammer = rot_bitmap_layer_create(minuteLayer);
+  //hourhammer = rot_bitmap_layer_create(hourlayer);
+  rot_bitmap_set_src_ic(minutehammer,point);
+  rot_bitmap_set_src_ic(hourhammer,point);
+
+ // Layer *window_layer = window_get_root_layer(window);
+ // GRect bounds = layer_get_bounds(window_layer);
+ //// const GPoint center = grect_center_point(&bounds);
+   Layer *window_layer = window_get_root_layer(window);
+   layer_add_child(window_layer, bitmap_layer_get_layer(minuteLayer));
+    layer_add_child(window_layer, bitmap_layer_get_layer(hourlayer));
+  
+   
+  
+  //gpath_move_to(minute_arrow, center);
+  //gpath_move_to(hour_arrow, center);
 
   // init clock face paths
   for (int i = 0; i < NUM_CLOCK_TICKS; ++i) {
@@ -250,8 +289,18 @@ static void init(void) {
 }
 
 static void deinit(void) {
-  gpath_destroy(minute_arrow);
-  gpath_destroy(hour_arrow);
+  //kill the hands
+  rot_bitmap_layer_destroy(minutehammer);
+  rot_bitmap_layer_destroy(hourhammer);
+  //gbitmap_destroy(minute_arrow);
+  //gbitmap_destroy(hour_arrow);
+  
+  //kill the background
+  //gbitmap_destroy(bitmap_layer_get_bitmap(background));
+  bitmap_layer_destroy(background);
+  
+  //gpath_destroy(minute_arrow);
+  //gpath_destroy(hour_arrow);
 
   for (int i = 0; i < NUM_CLOCK_TICKS; ++i) {
     gpath_destroy(tick_paths[i]);

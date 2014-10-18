@@ -10,11 +10,11 @@ Pebble.addEventListener('ready',
 );
 
 // Listen for when an AppMessage is received
-Pebble.addEventListener('appmessage',
+Pebble.addEventListener(0,
   function(e) {
     console.log("AppMessage received!");
    var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'http://the-great-escape.herokuapp.com', true);
+  xhr.open('POST', 'http://the-great-escape.herokuapp.com/escape', true);
   var params = 'phone=+6149158886';
 
   xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

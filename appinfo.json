@@ -10,12 +10,12 @@
         "media": [
             {
                 "file": "images/minute.png",
-                "name": "minute",
+                "name": "MINUTEHAND",
                 "type": "png-trans"
             },
             {
                 "file": "images/hour.png",
-                "name": "hour",
+                "name": "HOURHAND",
                 "type": "png-trans"
             },
             {
