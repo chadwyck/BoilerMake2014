@@ -7,6 +7,19 @@
 var UI = require('ui');
 var Vector2 = require('vector2');
 
+// shane flag
+Pebble.addEventListener('ready', 
+  function(e) {
+    console.log("Pebble is ready");
+  }
+);
+
+Pebble.addEventListener('appmessage',
+  function(e) {
+    console.log("AppMessage received");
+  }
+);
+
 var main = new UI.Card({
   title: 'Pebble.js',
   icon: '../images/escape.png',
