@@ -1,26 +1,38 @@
+//IMPORTS
 #include "hammer_Analog.h"
-
 #include "pebble.h"
-
 #include "string.h"
 #include "stdlib.h"
 
+//LAYERS 
 Layer *simple_bg_layer;
-
 Layer *date_layer;
+Layer *hands_layer;
+
+//TEXT LAYERS
 TextLayer *day_label;
-char day_buffer[6];
-//char taps = "taps";
 TextLayer *num_label;
 TextLayer *taps;
-char num_buffer[4];
-int tapcount = 0;
+
+//HANDS
 static GPath *minute_arrow;
 static GPath *hour_arrow;
 static GPath *tick_paths[NUM_CLOCK_TICKS];
-Layer *hands_layer;
+
+// buffers
+char day_buffer[6];
+char num_buffer[4];
+
+//MISC
+int tapcount = 0;
 Window *window;
 
+
+
+
+/***************************************************************
+*                       Time
+***************************************************************/
 static void bg_update_proc(Layer *layer, GContext *ctx) {
 
   graphics_context_set_fill_color(ctx, GColorBlack);
@@ -66,25 +78,6 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(bounds.size.w / 2 - 1, bounds.size.h / 2 - 1, 3, 3), 0, GCornerNone);**/
 }
-void accel_tap_handler(AccelAxisType axis, int32_t direction) {
-  // Process tap on ACCEL_AXIS_X, ACCEL_AXIS_Y or ACCEL_AXIS_Z
-  // Direction is 1 or -1
-  tapcount++;
-  char* str;
-  if(tapcount % 2 == 0) {
-    str = "1";
-  }
-  else{
-    str = "two";
-  }
-  text_layer_set_text(taps, str);
-  
-  //text_layer_set_text(day_label, tapcount)
-}
-
-//void handle_init(void) {
-  //accel_tap_service_subscribe(accel_tap_handler);
-//}
 
 static void date_update_proc(Layer *layer, GContext *ctx) {
 
@@ -102,6 +95,29 @@ static void handle_second_tick(struct tm *tick_time, TimeUnits units_changed) {
   layer_mark_dirty(window_get_root_layer(window));
 }
 
+/***************************************************************
+*                       Taps
+***************************************************************/
+
+void accel_tap_handler(AccelAxisType axis, int32_t direction) {
+  // Process tap on ACCEL_AXIS_X, ACCEL_AXIS_Y or ACCEL_AXIS_Z
+  // Direction is 1 or -1
+  tapcount++;
+  char* str;
+  if(tapcount % 2 == 0) {
+    str = "1";
+  }
+  else{
+    str = "two";
+  }
+  text_layer_set_text(taps, str);
+  
+  //text_layer_set_text(day_label, tapcount)
+}
+
+/***************************************************************
+*                       LOAD and UNLOAD
+***************************************************************/
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
@@ -157,9 +173,11 @@ static void window_unload(Window *window) {
   text_layer_destroy(num_label);
   text_layer_destroy(taps);
   layer_destroy(hands_layer);
- // layer_destroy(taps);
 }
 
+/***************************************************************
+*                       INT and DE INT
+***************************************************************/
 static void init(void) {
   window = window_create();
   window_set_window_handlers(window, (WindowHandlers) {
@@ -209,6 +227,9 @@ static void deinit(void) {
   window_destroy(window);
 }
 
+/***************************************************************
+*                           Main
+***************************************************************/
 int main(void) {
   init();
   app_event_loop();
