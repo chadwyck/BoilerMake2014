@@ -73,17 +73,19 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_stroke_color(ctx, GColorWhite);
   graphics_draw_line(ctx, secondHand, center);
   
-  minuteLayer = bitmap_layer_create(GRect(55, 85, 33, 66));
-  hourlayer = bitmap_layer_create(GRect(55, 85, 33, 66));
+   
+  hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOURHAND);
+    minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND);
+   //hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOUR_SQUARE);
+  //minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MIN_SQUARE);
   
-  hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE);
-  minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND_WHITE);
-  
-  bitmap_layer_set_compositing_mode(minuteLayer, GCompOpAnd);
-  bitmap_layer_set_compositing_mode(hourlayer, GCompOpAnd);
+  bitmap_layer_set_compositing_mode(minuteLayer, GCompOpOr);
+  bitmap_layer_set_compositing_mode(hourlayer, GCompOpOr);
   
   bitmap_layer_set_bitmap(minuteLayer, minutehammerimage);
   bitmap_layer_set_bitmap(hourlayer, hourhammerimage);
+  bitmap_layer_set_alignment(minuteLayer, GAlignBottom);
+  bitmap_layer_set_alignment(hourlayer, GAlignBottom);
   
   layer_add_child(layer, bitmap_layer_get_layer(minuteLayer));
   layer_add_child(layer, bitmap_layer_get_layer(hourlayer));
@@ -263,6 +265,9 @@ static void init(void) {
   day_buffer[0] = '\0';
   num_buffer[0] = '\0';
 
+  
+   minuteLayer = bitmap_layer_create(GRect(55, 85, 33, 66));
+  hourlayer = bitmap_layer_create(GRect(55, 85, 33, 66));
   // init hand paths
   //#define GRect(55.5, 85.5, 33, 66)((Grect){{(55.5),(85.5)},{(33),(66)}});
   GRect rect = GRect(55, 85, 33, 66);//off a little
@@ -315,14 +320,14 @@ static void deinit(void) {
   //kill the hands
   //rot_bitmap_layer_destroy(minutehammer);
   ///rot_bitmap_layer_destroy(hourhammer);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "bit layer to be freed %p", minuteLayer);  //gbitmap_destroy(minute_arrow);
+ // APP_LOG(APP_LOG_LEVEL_DEBUG, "bit layer to be freed %p", minuteLayer);  //gbitmap_destroy(minute_arrow);
   //gbitmap_destroy(hour_arrow);
   bitmap_layer_destroy(minuteLayer);
   bitmap_layer_destroy(hourlayer);
   
   //kill the background
   //gbitmap_destroy(bitmap_layer_get_bitmap(background));
-  bitmap_layer_destroy(background);
+  //bitmap_layer_destroy(background);
   
   //gpath_destroy(minute_arrow);
   //gpath_destroy(hour_arrow);
@@ -331,7 +336,7 @@ static void deinit(void) {
     gpath_destroy(tick_paths[i]);
   }
 
-  tick_timer_service_unsubscribe();
+    tick_timer_service_unsubscribe();
    accel_tap_service_unsubscribe();
   window_destroy(window);
 }

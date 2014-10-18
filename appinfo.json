@@ -9,14 +9,24 @@
     "resources": {
         "media": [
             {
+                "file": "images/hourSquare.png",
+                "name": "HOUR_SQUARE",
+                "type": "png"
+            },
+            {
+                "file": "images/minSquare.png",
+                "name": "MIN_SQUARE",
+                "type": "png"
+            },
+            {
                 "file": "images/minute.png",
                 "name": "MINUTEHAND",
-                "type": "png-trans"
+                "type": "png"
             },
             {
                 "file": "images/hour.png",
                 "name": "HOURHAND",
-                "type": "png-trans"
+                "type": "png"
             },
             {
                 "file": "images/background.png",
