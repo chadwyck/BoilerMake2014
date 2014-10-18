@@ -1,4 +1,5 @@
 <Response>
   <Pause length="5"/>
-  <Say voice="woman">Thank you for using The Great Escape. Please walk away from the conversation you want to leave. Say something that makes you sound like you need to be in a hurry and cannot be bothered.</Say>
+  <Say voice="woman">Please walk away from the conversation you want to leave. Say something that makes you sound like you need to be in a hurry and cannot be bothered.</Say>
+  <Say voice="woman">Thank you for using The Great Escape.</Say>
 </Response>
