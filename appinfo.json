@@ -9,6 +9,16 @@
     "resources": {
         "media": [
             {
+                "file": "images/minute.png",
+                "name": "MINUTE_HAND",
+                "type": "png"
+            },
+            {
+                "file": "images/hour.png",
+                "name": "HOUR_HAND",
+                "type": "png"
+            },
+            {
                 "file": "images/hourSquare.png",
                 "name": "HOUR_SQUARE",
                 "type": "png"
@@ -16,16 +26,6 @@
             {
                 "file": "images/minSquare.png",
                 "name": "MIN_SQUARE",
-                "type": "png"
-            },
-            {
-                "file": "images/minute.png",
-                "name": "MINUTEHAND",
-                "type": "png"
-            },
-            {
-                "file": "images/hour.png",
-                "name": "HOURHAND",
                 "type": "png"
             },
             {
