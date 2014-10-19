@@ -6,13 +6,11 @@
 
 //LAYERS 
 Layer *simple_bg_layer;
-Layer *date_layer;
 Layer *hands_layer;
 BitmapLayer *background;
 
 //TEXT LAYERS
 TextLayer *num_label;
-TextLayer *taps;
 
 //HANDS
 RotBitmapLayer *minutehammer;
@@ -20,11 +18,9 @@ RotBitmapLayer *hourhammer;
 static GPath *tick_paths[NUM_CLOCK_TICKS];
 
 // buffers
-char day_buffer[6];
 char num_buffer[4];
 
 //MISC
-int tapcount = 0;
 Window *window;
 GBitmap *bacgroundimage;
 GBitmap *hourhammerimage;
@@ -84,48 +80,6 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   graphics_fill_rect(ctx, GRect(bounds.size.w / 2 - 1, bounds.size.h / 2 - 1, 3, 3), 0, GCornerNone);
 }
 /***************************************************************
-*                       .js
-***************************************************************/
-static void handle_second_tick(struct tm *tick_time, TimeUnits units_changed) {
-  layer_mark_dirty(window_get_root_layer(window));
-}
-
-static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
-}
-
-static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
-}
-/***************************************************************
-*                       Taps
-***************************************************************/
-
-void accel_tap_handler(AccelAxisType axis, int32_t direction) {
-
-  //GUI confirmation of tap
-  tapcount++;
-  char* str;
-  if(tapcount % 2 == 0) {
-    str = "1";
-  }
-  else{
-    str = "2";
-  }
-  text_layer_set_text(taps, str);
-  
-  
-  //.js sending
-  DictionaryIterator *iter;
-  app_message_outbox_begin(&iter);
-  // Add a key-value pair
-  dict_write_uint8(iter, 0, 1);//1 to be replaced with something relating to the pebble ID
-
-  // Send the message!
-  app_message_outbox_send();
-}
-
-/***************************************************************
 *                       LOAD and UNLOAD
 ***************************************************************/
 static void window_load(Window *window) {
@@ -145,18 +99,6 @@ static void window_load(Window *window) {
   bitmap_layer_set_compositing_mode(background, GCompOpAssign);
   layer_add_child(window_layer, bitmap_layer_get_layer(background));
   
-  date_layer = layer_create(bounds);
-  layer_add_child(window_layer, date_layer);
-  
-  //int tap label
-  taps = text_layer_create(GRect(10, 10, 20, 20));
-  text_layer_set_text(taps, "1");
-  text_layer_set_background_color(taps, GColorBlack);
-  text_layer_set_text_color(taps, GColorWhite);
-  GFont norm18 = fonts_get_system_font(FONT_KEY_GOTHIC_18);
-  text_layer_set_font(taps, norm18);
-  layer_add_child(date_layer, text_layer_get_layer(taps));
-
   // init num
   num_label = text_layer_create(GRect(73, 114, 18, 20));
 
@@ -166,24 +108,15 @@ static void window_load(Window *window) {
   GFont bold18 = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
   text_layer_set_font(num_label, bold18);
 
-  layer_add_child(date_layer, text_layer_get_layer(num_label));
-
   // init hands
   hands_layer = layer_create(bounds);
   layer_set_update_proc(hands_layer, hands_update_proc);
   layer_add_child(window_layer, hands_layer);
-    
-  //init .js communication
-  app_message_register_outbox_failed(outbox_failed_callback);
-  app_message_register_outbox_sent(outbox_sent_callback);
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 static void window_unload(Window *window) {
   layer_destroy(simple_bg_layer);
-  layer_destroy(date_layer);
   text_layer_destroy(num_label);
-  text_layer_destroy(taps);
   layer_destroy(hands_layer);
   bitmap_layer_destroy(background);
 }
@@ -198,7 +131,6 @@ static void init(void) {
     .unload = window_unload,
   });
 
-  day_buffer[0] = '\0';
   num_buffer[0] = '\0';
 
   hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOUR_HAND);
@@ -216,11 +148,7 @@ static void init(void) {
   const bool animated = true;
   window_stack_push(window, animated);
 
-  tick_timer_service_subscribe(SECOND_UNIT, handle_second_tick);
-  
-  //taps
-    accel_tap_service_subscribe(accel_tap_handler);
-  
+// tick_timer_service_subscribe(SECOND_UNIT, handle_second_tick);
 }
 
 static void deinit(void) {
