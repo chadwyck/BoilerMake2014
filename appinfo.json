@@ -3,11 +3,17 @@
     "capabilities": [
         ""
     ],
-    "companyName": "doolansr@rose-hulman.edu",
-    "longName": "The Great Escape C",
+    "companyName": "The AntiSocial Network",
+    "longName": "The Great Escape",
     "projectType": "native",
     "resources": {
         "media": [
+            {
+                "file": "images/appstore.png",
+                "menuIcon": true,
+                "name": "APPSTORE",
+                "type": "png"
+            },
             {
                 "file": "images/background.png",
                 "name": "CLOCKIMAGE",
@@ -35,11 +41,11 @@
             }
         ]
     },
-    "shortName": "The Great Escape C",
+    "shortName": "The Great Escape",
     "uuid": "5685910b-6d14-4250-9e74-21e6e80bdb05",
     "versionCode": 1,
     "versionLabel": "1.0",
     "watchapp": {
-        "watchface": false
+        "watchface": true
     }
 }
