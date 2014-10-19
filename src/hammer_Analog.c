@@ -16,10 +16,6 @@ TextLayer *num_label;
 TextLayer *taps;
 
 //HANDS
-//static GBitmap *minute_arrow;
-//static GBitmap *hour_arrow;
-//BitmapLayer *minuteLayer;
-//BitmapLayer *hourlayer;
 RotBitmapLayer *minutehammer;
 RotBitmapLayer *hourhammer;
 static GPath *tick_paths[NUM_CLOCK_TICKS];
@@ -44,15 +40,11 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(window_layer);
   
  
-   graphics_context_set_fill_color(ctx, GColorBlack);
-//  bacgroundimage = gbitmap_create_with_resource(CLOCKIMAGE);
+  graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
-  //graphics_draw_bitmap_in_rect(ctx, bacgroundimage, bounds);
   graphics_fill_rect(ctx, bounds, 11, GCornerNone);
   graphics_context_set_fill_color(ctx, GColorWhite);
-//  for (int i = 0; i < NUM_CLOCK_TICKS; ++i) {
- //   gpath_draw_filled(ctx, tick_paths[i]);
-//  }
+
 }
 
 static void hands_update_proc(Layer *layer, GContext *ctx) {
@@ -72,62 +64,23 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   // second hand
   graphics_context_set_stroke_color(ctx, GColorWhite);
   graphics_draw_line(ctx, secondHand, center);
-  
-        /***************************************************************
-        *                       bit map layer
-        ***************************************************************/
-  
-   //moved to int step
- // hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOURHAND);
-  //minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND);
-  //hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOUR_SQUARE);
-  //minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MIN_SQUARE);
-  /**
-  bitmap_layer_set_compositing_mode(minuteLayer, GCompOpOr);
-  bitmap_layer_set_compositing_mode(hourlayer, GCompOpOr);
-  
-  bitmap_layer_set_bitmap(minuteLayer, minutehammerimage);
-  bitmap_layer_set_bitmap(hourlayer, hourhammerimage);
-  bitmap_layer_set_alignment(minuteLayer, GAlignBottom);
-  bitmap_layer_set_alignment(hourlayer, GAlignBottom);
-  
-  layer_add_child(layer, bitmap_layer_get_layer(minuteLayer));
-  layer_add_child(layer, bitmap_layer_get_layer(hourlayer));**/
-  
+
           /***************************************************************
-        *                       rot bitmap layer
+        *                       rot bitmap layer for the hammers
         ***************************************************************/
   rot_bitmap_set_compositing_mode(hourhammer, GCompOpOr);
   rot_bitmap_set_compositing_mode(minutehammer, GCompOpOr);
   
-  rot_bitmap_set_src_ic(hourhammer, GPoint(14, 14));
-  rot_bitmap_set_src_ic(minutehammer, GPoint(20, 14));
+  rot_bitmap_set_src_ic(hourhammer, GPoint(17, 14));
+  rot_bitmap_set_src_ic(minutehammer, GPoint(17, 14));
   
   layer_add_child(layer, (Layer*) hourhammer);
   layer_add_child(layer, (Layer*) minutehammer);
   
-  rot_bitmap_layer_set_angle(minutehammer, TRIG_MAX_ANGLE * t->tm_min / 60);
-  rot_bitmap_layer_set_angle(hourhammer, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  rot_bitmap_layer_set_angle(minutehammer, (TRIG_MAX_ANGLE * t->tm_min / 60+TRIG_MAX_ANGLE/2) % TRIG_MAX_ANGLE);
+  rot_bitmap_layer_set_angle(hourhammer, ((TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6)+TRIG_MAX_ANGLE/2)%TRIG_MAX_ANGLE);
   
-  
-  
-
-  // minute/hour hand
-  //graphics_context_set_fill_color(ctx, GColorWhite);
-  //graphics_context_set_stroke_color(ctx, GColorBlack);
-  
-  //gpath_rotate_to(minute_arrow, TRIG_MAX_ANGLE * t->tm_min / 60);
-  //rot_bitmap_layer_set_angle(minutehammer, TRIG_MAX_ANGLE * t->tm_min / 60);
-  
-  //gpath_draw_filled(ctx, minute_arrow);
-  //gpath_draw_outline(ctx, minute_arrow);
-
-  //path_rotate_to(hour_arrow, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
-  //rot_bitmap_layer_set_angle(hourhammer, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
-  //gpath_draw_filled(ctx, hour_arrow);
-  //gpath_draw_outline(ctx, hour_arrow);
-
- // dot in the middle
+   // dot in the middle
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(bounds.size.w / 2 - 1, bounds.size.h / 2 - 1, 3, 3), 0, GCornerNone);
 }
@@ -284,56 +237,11 @@ static void init(void) {
   day_buffer[0] = '\0';
   num_buffer[0] = '\0';
 
-  /**
-   minuteLayer = bitmap_layer_create(GRect(55, 85, 33, 66));
-  hourlayer = bitmap_layer_create(GRect(55, 85, 33, 66));**/
-   hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOUR_HAND);
-   minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MINUTE_HAND);
+  hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOUR_HAND);
+  minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MINUTE_HAND);
 
-   hourhammer = rot_bitmap_layer_create(hourhammerimage);
-   minutehammer = rot_bitmap_layer_create(minutehammerimage);
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  //TRASH
-  
-  // init hand paths
-  //#define GRect(55.5, 85.5, 33, 66)((Grect){{(55.5),(85.5)},{(33),(66)}});
-  //GRect rect = GRect(55, 85, 33, 66);//off a little
-  //GPoint point = GPoint(72,95);
-  //GRect rectMin = ((Grect){{(55.5),(85.5)},{(33),(66)}});
-/**
-    
-  //minute_arrow = gbitmap
-  minuteLayer = bitmap_layer_create(GRect(55, 85, 33, 66));
-  hourlayer = bitmap_layer_create(GRect(55, 85, 33, 66)); //move out of there
-  
-  //bitmap_layer_set_bitmap(hourlayer, gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE));
-//  bitmap_layer_set_bitmap(minuteLayer, gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND_WHITE));
-  minutehammer = rot_bitmap_layer_create(gbitmap_create_with_resource(RESOURCE_ID_HOURHAND_WHITE));
-  hourhammer = rot_bitmap_layer_create(gbitmap_create_with_resource(RESOURCE_ID_MINUTEHAND_WHITE));
-  //minutehammer = rot_bitmap_layer_create(minuteLayer);
-  //hourhammer = rot_bitmap_layer_create(hourlayer);
-  rot_bitmap_set_src_ic(minutehammer,point);
-  rot_bitmap_set_src_ic(hourhammer,point);
-
- // Layer *window_layer = window_get_root_layer(window);
- // GRect bounds = layer_get_bounds(window_layer);
- //// const GPoint center = grect_center_point(&bounds);
-   Layer *window_layer = window_get_root_layer(window);
-   layer_add_child(window_layer, bitmap_layer_get_layer(minuteLayer));
-    layer_add_child(window_layer, bitmap_layer_get_layer(hourlayer));
-  
-   
-  **/
-  //gpath_move_to(minute_arrow, center);
-  //gpath_move_to(hour_arrow, center);
+  hourhammer = rot_bitmap_layer_create(hourhammerimage);
+  minutehammer = rot_bitmap_layer_create(minutehammerimage);
 
   // init clock face paths
   for (int i = 0; i < NUM_CLOCK_TICKS; ++i) {
@@ -352,29 +260,9 @@ static void init(void) {
 }
 
 static void deinit(void) {
-   //bitmap_layer_destroy(minuteLayer);
-  //bitmap_layer_destroy(hourlayer);
   
   rot_bitmap_layer_destroy(minutehammer);
   rot_bitmap_layer_destroy(hourhammer);
-  
-  
-  
-  
-  
-  //kill the hands
-  //rot_bitmap_layer_destroy(minutehammer);
-  ///rot_bitmap_layer_destroy(hourhammer);
- // APP_LOG(APP_LOG_LEVEL_DEBUG, "bit layer to be freed %p", minuteLayer);  //gbitmap_destroy(minute_arrow);
-  //gbitmap_destroy(hour_arrow);
-
-  
-  //kill the background
-  //gbitmap_destroy(bitmap_layer_get_bitmap(background));
-  //bitmap_layer_destroy(background);
-  
-  //gpath_destroy(minute_arrow);
-  //gpath_destroy(hour_arrow);
 
   for (int i = 0; i < NUM_CLOCK_TICKS; ++i) {
     gpath_destroy(tick_paths[i]);
