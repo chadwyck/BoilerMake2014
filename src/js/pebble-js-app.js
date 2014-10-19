@@ -1,10 +1,9 @@
-var HOST = 'the-great-escape.herokuapp.com';
-HOST = 'tge.ngrok.com';
+var HOST = 'greatesc.me';
 
 Pebble.addEventListener("ready", function(e) {
   var title = "Next Steps";
   var watchId = Pebble.getWatchToken().substring(0, 4);
-  var text = "Text the following four characters to +16144291658, they are your AntiSocial Security Number: "+watchId;
+  var text = ""+watchId+" is your AntiSocial Security Number. Text them to +16144291658 to activate The Great Escape.";
   Pebble.showSimpleNotificationOnPebble(title, text);
 });
 
