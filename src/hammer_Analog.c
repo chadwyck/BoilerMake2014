@@ -134,7 +134,7 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   }
   text_layer_set_text(taps, str);
   **/
-  if(tapcount<10)
+  if(tapcount>5)
   {
     tapcount = 0;
     //Register AppMessage events
