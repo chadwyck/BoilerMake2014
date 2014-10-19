@@ -147,7 +147,7 @@ static void window_load(Window *window) {
   background = bitmap_layer_create(bounds);
   bacgroundimage = gbitmap_create_with_resource(RESOURCE_ID_CLOCKIMAGE);
   bitmap_layer_set_bitmap(background, bacgroundimage);
-  bitmap_layer_set_alignment(background, GAlignBottom);
+  bitmap_layer_set_alignment(background, GAlignCenter);
   bitmap_layer_set_compositing_mode(background, GCompOpAssign);
   layer_add_child(window_layer, bitmap_layer_get_layer(background));
   
@@ -164,10 +164,10 @@ static void window_load(Window *window) {
   layer_add_child(date_layer, text_layer_get_layer(taps));
 
   // init num
-  num_label = text_layer_create(GRect(73, 114, 18, 20));
+ num_label = text_layer_create(GRect(73, 114, 18, 20));
 
   text_layer_set_text(num_label, num_buffer);
-  text_layer_set_background_color(num_label, GColorBlack);
+  text_layer_set_background_color(num_label, GColorClear);
   text_layer_set_text_color(num_label, GColorWhite);
   GFont bold18 = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
   text_layer_set_font(num_label, bold18);

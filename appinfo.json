@@ -9,24 +9,8 @@
     "resources": {
         "media": [
             {
-                "file": "images/appstore.png",
-                "menuIcon": true,
-                "name": "APPSTORE",
-                "type": "png"
-            },
-            {
-                "file": "images/background.png",
-                "name": "CLOCKIMAGE",
-                "type": "png"
-            },
-            {
-                "file": "images/minSquare.png",
-                "name": "MIN_SQUARE",
-                "type": "png"
-            },
-            {
-                "file": "images/hourSquare.png",
-                "name": "HOUR_SQUARE",
+                "file": "images/minute.png",
+                "name": "MINUTE_HAND",
                 "type": "png"
             },
             {
@@ -35,8 +19,24 @@
                 "type": "png"
             },
             {
-                "file": "images/minute.png",
-                "name": "MINUTE_HAND",
+                "file": "images/hourSquare.png",
+                "name": "HOUR_SQUARE",
+                "type": "png"
+            },
+            {
+                "file": "images/minSquare.png",
+                "name": "MIN_SQUARE",
+                "type": "png"
+            },
+            {
+                "file": "images/background.png",
+                "name": "CLOCKIMAGE",
+                "type": "png"
+            },
+            {
+                "file": "images/appstore.png",
+                "menuIcon": true,
+                "name": "APPSTORE",
                 "type": "png"
             }
         ]
