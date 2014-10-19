@@ -1,4 +1,4 @@
-var HOST = 'greatesc.me';
+var HOST = 'www.greatesc.me';
 
 Pebble.addEventListener("ready", function(e) {
   var title = "Next Steps";
