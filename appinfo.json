@@ -9,18 +9,8 @@
     "resources": {
         "media": [
             {
-                "file": "images/minute.png",
-                "name": "MINUTE_HAND",
-                "type": "png"
-            },
-            {
-                "file": "images/hour.png",
-                "name": "HOUR_HAND",
-                "type": "png"
-            },
-            {
-                "file": "images/hourSquare.png",
-                "name": "HOUR_SQUARE",
+                "file": "images/background.png",
+                "name": "CLOCKIMAGE",
                 "type": "png"
             },
             {
@@ -29,8 +19,18 @@
                 "type": "png"
             },
             {
-                "file": "images/background.png",
-                "name": "CLOCKIMAGE",
+                "file": "images/hourSquare.png",
+                "name": "HOUR_SQUARE",
+                "type": "png"
+            },
+            {
+                "file": "images/hour.png",
+                "name": "HOUR_HAND",
+                "type": "png"
+            },
+            {
+                "file": "images/minute.png",
+                "name": "MINUTE_HAND",
                 "type": "png"
             }
         ]
