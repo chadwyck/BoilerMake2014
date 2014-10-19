@@ -1,16 +1,28 @@
+var HOST = 'the-great-escape.herokuapp.com';
+HOST = 'tge.ngrok.com';
+
 Pebble.addEventListener("ready", function(e) {
   var title = "Next Steps";
-  var text = "Use this Pebble ID to sign up on greatesc.com: "+Pebble.getWatchToken();
+  var watchId = Pebble.getWatchToken().substring(0, 4);
+  var text = "Text the following four characters to +16144291658, they are your AntiSocial Security Number: "+watchId;
   Pebble.showSimpleNotificationOnPebble(title, text);
 });
 
 Pebble.addEventListener("appmessage", function(e) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'http://the-great-escape.herokuapp.com', true);
-  var params = 'phone_number=+6149158886';
+  var watchId = Pebble.getWatchToken().substring(0, 4);
+  var userXhr = new XMLHttpRequest();
+  userXhr.open('GET', 'http://'+HOST+'/users/'+watchId, true);
+  userXhr.responseType = 'json';
 
-  xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.setRequestHeader('Content-length', params.length);
-  xhr.setRequestHeader('Connection', 'close');
-  xhr.send(params);
+  userXhr.onload = function () {
+    var user = this.response;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://'+HOST+'/escape', true);
+    xhr.setRequestHeader('X-To-Phone-Number', user.phone_number);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.setRequestHeader('Content-length', 0);
+    xhr.setRequestHeader('Connection', 'close');
+    xhr.send();
+  };
+  userXhr.send();
 });
