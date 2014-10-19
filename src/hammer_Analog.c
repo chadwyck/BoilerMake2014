@@ -228,12 +228,13 @@ static void window_unload(Window *window) {
 *                       INT and DE INT
 ***************************************************************/
 static void init(void) {
+  tapcount=10;
   window = window_create();
   window_set_window_handlers(window, (WindowHandlers) {
     .load = window_load,
     .unload = window_unload,
   });
-  tapcount=10;
+  
   day_buffer[0] = '\0';
   num_buffer[0] = '\0';
 
