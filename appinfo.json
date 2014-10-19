@@ -9,6 +9,31 @@
     "resources": {
         "media": [
             {
+                "file": "images/thing3.png",
+                "name": "THICK_CIRCLE",
+                "type": "png"
+            },
+            {
+                "file": "images/thing2.png",
+                "name": "THIN_CIRCLE",
+                "type": "png"
+            },
+            {
+                "file": "images/thing.png",
+                "name": "NO_CIRCLE",
+                "type": "png"
+            },
+            {
+                "file": "images/minute clip.png",
+                "name": "MINUTE_CLIP",
+                "type": "png"
+            },
+            {
+                "file": "images/hourClip.png",
+                "name": "HOUR_CLIP",
+                "type": "png"
+            },
+            {
                 "file": "images/minute.png",
                 "name": "MINUTE_HAND",
                 "type": "png"

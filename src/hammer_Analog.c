@@ -9,6 +9,7 @@ Layer *simple_bg_layer;
 Layer *date_layer;
 Layer *hands_layer;
 BitmapLayer *background;
+BitmapLayer *circle;
 
 //TEXT LAYERS
 TextLayer *num_label;
@@ -24,9 +25,11 @@ char day_buffer[6];
 char num_buffer[4];
 
 //MISC
-int tapcount = 0;
+int tapcount;
 Window *window;
 GBitmap *bacgroundimage;
+//GBitmap *circleThick;
+//GBitmap *circleThin;
 GBitmap *hourhammerimage;
 GBitmap *minutehammerimage;
 /***************************************************************
@@ -53,7 +56,8 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
 
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
-
+  if(tapcount>15)
+    tapcount++;
   int32_t second_angle = TRIG_MAX_ANGLE * t->tm_sec / 60;
   secondHand.y = (int16_t)(-cos_lookup(second_angle) * (int32_t)secondHandLength / TRIG_MAX_RATIO) + center.y;
   secondHand.x = (int16_t)(sin_lookup(second_angle) * (int32_t)secondHandLength / TRIG_MAX_RATIO) + center.x;
@@ -61,7 +65,17 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   // second hand
   graphics_context_set_stroke_color(ctx, GColorWhite);
   graphics_draw_line(ctx, secondHand, center);
-
+  /**
+  if(t->tm_sec %2 == 0)
+  {
+    bitmap_layer_set_bitmap(circle, circleThin);
+  }
+  else
+  {
+    bitmap_layer_set_bitmap(circle, circleThick);
+  }
+  bitmap_layer_set_compositing_mode(circle, GCompOpOr);
+  **/
           /***************************************************************
         *                       rot bitmap layer for the hammers
         ***************************************************************/
@@ -108,7 +122,7 @@ static void out_handler(DictionaryIterator *iter, void *context)
 
 
 void accel_tap_handler(AccelAxisType axis, int32_t direction) {
-
+/**
   //GUI confirmation of tap
   tapcount++;
   char* str;
@@ -119,16 +133,20 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction) {
     str = "2";
   }
   text_layer_set_text(taps, str);
-  
-  //Register AppMessage events
+  **/
+  if(tapcount<10)
+  {
+    tapcount = 0;
+    //Register AppMessage events
     app_message_register_outbox_sent(out_handler);
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());    //Largest possible input and output buffer sizes
   
-  DictionaryIterator *iter;
-  app_message_outbox_begin(&iter);
-  Tuplet value = TupletInteger(1, 42); //writing placeholder value
-  dict_write_tuplet(iter, &value); 
-  app_message_outbox_send();
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+    Tuplet value = TupletInteger(1, 42); //writing placeholder value
+    dict_write_tuplet(iter, &value); 
+    app_message_outbox_send();
+  }
 }
 
 /***************************************************************
@@ -153,7 +171,19 @@ static void window_load(Window *window) {
   
   date_layer = layer_create(bounds);
   layer_add_child(window_layer, date_layer);
-  
+  /**  
+  //background circle
+  circle = bitmap_layer_create(bounds);
+  circleThin = gbitmap_create_with_resource(RESOURCE_ID_THIN_CIRCLE);
+  circleThick = gbitmap_create_with_resource(RESOURCE_ID_THICK_CIRCLE);
+  bitmap_layer_set_bitmap(circle, circleThin);
+  bitmap_layer_set_alignment(circle, GAlignCenter);
+  bitmap_layer_set_compositing_mode(circle, GCompOpOr);
+  layer_add_child(window_layer, bitmap_layer_get_layer(circle));
+  **/
+  date_layer = layer_create(bounds);
+  layer_add_child(window_layer, date_layer);
+  /**
   //int tap label
   taps = text_layer_create(GRect(10, 10, 20, 20));
   text_layer_set_text(taps, "1");
@@ -162,9 +192,9 @@ static void window_load(Window *window) {
   GFont norm18 = fonts_get_system_font(FONT_KEY_GOTHIC_18);
   text_layer_set_font(taps, norm18);
   layer_add_child(date_layer, text_layer_get_layer(taps));
-
+  **/
   // init num
- num_label = text_layer_create(GRect(73, 114, 18, 20));
+   num_label = text_layer_create(GRect(73, 114, 18, 20));
 
   text_layer_set_text(num_label, num_buffer);
   text_layer_set_background_color(num_label, GColorClear);
@@ -203,13 +233,13 @@ static void init(void) {
     .load = window_load,
     .unload = window_unload,
   });
-
+  tapcount=10;
   day_buffer[0] = '\0';
   num_buffer[0] = '\0';
 
-  hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOUR_HAND);
+  
   minutehammerimage = gbitmap_create_with_resource(RESOURCE_ID_MINUTE_HAND);
-
+  hourhammerimage = gbitmap_create_with_resource(RESOURCE_ID_HOUR_HAND);
   hourhammer = rot_bitmap_layer_create(hourhammerimage);
   minutehammer = rot_bitmap_layer_create(minutehammerimage);
 
