@@ -66,8 +66,8 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   rot_bitmap_set_compositing_mode(hourhammer, GCompOpOr);
   rot_bitmap_set_compositing_mode(minutehammer, GCompOpOr);
   
-  rot_bitmap_set_src_ic(hourhammer, GPoint(17, 14));
-  rot_bitmap_set_src_ic(minutehammer, GPoint(17, 14));
+  rot_bitmap_set_src_ic(hourhammer, GPoint(14, 12));
+  rot_bitmap_set_src_ic(minutehammer, GPoint(14, 12));
   
   layer_add_child(layer, (Layer*) hourhammer);
   layer_add_child(layer, (Layer*) minutehammer);
@@ -95,7 +95,7 @@ static void window_load(Window *window) {
   background = bitmap_layer_create(bounds);
   bacgroundimage = gbitmap_create_with_resource(RESOURCE_ID_CLOCKIMAGE);
   bitmap_layer_set_bitmap(background, bacgroundimage);
-  bitmap_layer_set_alignment(background, GAlignBottom);
+  bitmap_layer_set_alignment(background, GAlignCenter);
   bitmap_layer_set_compositing_mode(background, GCompOpAssign);
   layer_add_child(window_layer, bitmap_layer_get_layer(background));
   

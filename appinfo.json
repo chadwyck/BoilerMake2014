@@ -3,24 +3,25 @@
     "capabilities": [
         ""
     ],
-    "companyName": "doolansr@rose-hulman.edu",
-    "longName": "The Great Escape C",
+    "companyName": "The anti-social network",
+    "longName": "BoilerMake",
     "projectType": "native",
     "resources": {
         "media": [
             {
-                "file": "images/minute.png",
-                "name": "MINUTE_HAND",
+                "file": "images/appstore_28.png",
+                "menuIcon": true,
+                "name": "APPSTORE",
                 "type": "png"
             },
             {
-                "file": "images/hour.png",
-                "name": "HOUR_HAND",
+                "file": "images/example.png",
+                "name": "example",
                 "type": "png"
             },
             {
-                "file": "images/hourSquare.png",
-                "name": "HOUR_SQUARE",
+                "file": "images/background.png",
+                "name": "CLOCKIMAGE",
                 "type": "png"
             },
             {
@@ -29,17 +30,27 @@
                 "type": "png"
             },
             {
-                "file": "images/background.png",
-                "name": "CLOCKIMAGE",
+                "file": "images/hourSquare.png",
+                "name": "HOUR_SQUARE",
+                "type": "png"
+            },
+            {
+                "file": "images/hour.png",
+                "name": "HOUR_HAND",
+                "type": "png"
+            },
+            {
+                "file": "images/minute.png",
+                "name": "MINUTE_HAND",
                 "type": "png"
             }
         ]
     },
-    "shortName": "The Great Escape C",
+    "shortName": "BoilerMake",
     "uuid": "5685910b-6d14-4250-9e74-21e6e80bdb05",
     "versionCode": 1,
-    "versionLabel": "1.0",
+    "versionLabel": "1.1",
     "watchapp": {
-        "watchface": false
+        "watchface": true
     }
 }
