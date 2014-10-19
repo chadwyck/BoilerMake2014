@@ -7,7 +7,33 @@
     "longName": "The Great Escape C",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/minute.png",
+                "name": "MINUTE_HAND",
+                "type": "png"
+            },
+            {
+                "file": "images/hour.png",
+                "name": "HOUR_HAND",
+                "type": "png"
+            },
+            {
+                "file": "images/hourSquare.png",
+                "name": "HOUR_SQUARE",
+                "type": "png"
+            },
+            {
+                "file": "images/minSquare.png",
+                "name": "MIN_SQUARE",
+                "type": "png"
+            },
+            {
+                "file": "images/background.png",
+                "name": "CLOCKIMAGE",
+                "type": "png"
+            }
+        ]
     },
     "shortName": "The Great Escape C",
     "uuid": "5685910b-6d14-4250-9e74-21e6e80bdb05",
